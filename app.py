@@ -197,10 +197,120 @@ def get_filtered(D, from_date, to_date, l1_filter):
         "n_opt": D["n_opt"], "n_nc": D["n_nc"],
     }
 
+
+# ── YoY HELPERS ───────────────────────────────────────────────────────────────
+
+def build_yoy_from_df(df: pd.DataFrame, n_opt: int, n_nc: int) -> dict:
+    """
+    Process a prior-year Feed Works DataFrame.
+    Uses the same LOOKUP (same product IDs, different year).
+    Returns daily series with dates offset forward 364 days (52 weeks)
+    so they align by day-of-week on the chart with the current year.
+    """
+    from datetime import timedelta
+    df = df.copy()
+    df["id_norm"] = df["Product ID"].apply(norm_id)
+    df["group"]   = df["id_norm"].map(LOOKUP)
+    df = df[df["group"].notna()]
+    df["Day"] = pd.to_datetime(df["Day"])
+    df = df[df["Day"] < df["Day"].max()]  # exclude partial last day
+
+    # Use the same n_opt / n_nc from current year for fair per-product comparison
+    def agg_group(grp, n):
+        g = df[df["group"] == grp].groupby("Day").agg(
+            clicks=("Product clicks", "sum"),
+            impr=("Product impressions", "sum"),
+            purch=("Product purchases", "sum"),
+            val=("Product purchase value", "sum"),
+            pr_sum=("Product purchase rate", "sum"),
+            pr_rows=("Product purchase rate", "count"),
+        ).reset_index().sort_values("Day")
+        g["clicks_pp"] = g["clicks"] / n
+        g["impr_pp"]   = g["impr"]   / n
+        g["purch_pp"]  = g["purch"]  / n
+        g["val_pp"]    = g["val"]    / n
+        g["ctr"] = (g["clicks"] / g["impr"].replace(0, float("nan"))) * 100
+        g["pr"]  = (g["pr_sum"] / g["pr_rows"].replace(0, float("nan"))) * 100
+        # Offset dates by 364 days (52 weeks) to align same weekday in following year
+        g["Day_aligned"] = g["Day"] + timedelta(days=364)
+        return g.set_index("Day_aligned")
+
+    opt_y = agg_group("opt", n_opt)
+    nc_y  = agg_group("nc",  n_nc)
+
+    def ser(df, col):
+        return {d.strftime("%Y-%m-%d"): (round(float(v), 4) if pd.notna(v) else None)
+                for d, v in df[col].items()}
+
+    return {
+        "opt": {
+            "clicks": ser(opt_y, "clicks_pp"), "impr": ser(opt_y, "impr_pp"),
+            "ctr":    ser(opt_y, "ctr"),        "pr":   ser(opt_y, "pr"),
+            "purch":  ser(opt_y, "purch_pp"),   "val":  ser(opt_y, "val_pp"),
+        },
+        "nc": {
+            "clicks": ser(nc_y, "clicks_pp"), "impr": ser(nc_y, "impr_pp"),
+            "ctr":    ser(nc_y, "ctr"),        "pr":   ser(nc_y, "pr"),
+            "purch":  ser(nc_y, "purch_pp"),   "val":  ser(nc_y, "val_pp"),
+        },
+        "date_min": df["Day"].min().strftime("%Y-%m-%d"),
+        "date_max": df["Day"].max().strftime("%Y-%m-%d"),
+        "n_days":   df["Day"].nunique(),
+    }
+
+
+def get_yoy_series(YOY: dict, iso_list: list, metric: str):
+    """
+    For a list of current-year ISO dates, return the YoY values for opt and nc.
+    Returns None where no prior-year data exists for the aligned date.
+    """
+    opt_map = YOY["opt"][metric]
+    nc_map  = YOY["nc"][metric]
+    return (
+        [opt_map.get(d) for d in iso_list],
+        [nc_map.get(d)  for d in iso_list],
+    )
+
+
+def yoy_insights(F: dict, YOY: dict, metric: str) -> dict:
+    """
+    Compute YoY % changes for opt and nc groups over the filtered date window.
+    Returns a dict with avg values and % changes.
+    """
+    opt_yoy, nc_yoy = get_yoy_series(YOY, F["iso"], metric)
+
+    def period_avg(series):
+        v = [x for x in series if x is not None]
+        return sum(v) / len(v) if v else None
+
+    def avg(series):
+        v = [x for x in series if x is not None]
+        return sum(v) / len(v) if v else None
+
+    def pct_change(curr, prev):
+        if curr is None or prev is None or prev == 0:
+            return None
+        return (curr - prev) / abs(prev) * 100
+
+    opt_curr = avg(F["opt"][metric])
+    nc_curr  = avg(F["nc"][metric])
+    opt_prev = avg(opt_yoy)
+    nc_prev  = avg(nc_yoy)
+
+    return {
+        "opt_curr": opt_curr, "opt_prev": opt_prev,
+        "nc_curr":  nc_curr,  "nc_prev":  nc_prev,
+        "opt_yoy_pct": pct_change(opt_curr, opt_prev),
+        "nc_yoy_pct":  pct_change(nc_curr,  nc_prev),
+        "opt_vs_nc_pct": pct_change(opt_curr, nc_curr),
+    }
+
 # ── STATE ─────────────────────────────────────────────────────────────────────
 
 if "D" not in st.session_state:
     st.session_state.D = _INIT
+if "YOY" not in st.session_state:
+    st.session_state.YOY = None
 
 D = st.session_state.D
 
@@ -264,11 +374,39 @@ with st.sidebar:
                        format_func=lambda k: METRIC_META[k]["label"], index=0)
 
     st.divider()
+
+    st.markdown("**Year-on-year comparison**")
+    uploaded_yoy = st.file_uploader(
+        "Prior year Feed Works CSV",
+        type="csv",
+        help="Export the same date window from the previous year. Dates will be automatically aligned (+364 days) to match the current year by day of week.",
+    )
+    if uploaded_yoy:
+        with st.spinner("Processing prior year…"):
+            try:
+                df_yoy = load_feed_works_csv(uploaded_yoy)
+                st.session_state.YOY = build_yoy_from_df(df_yoy, D["n_opt"], D["n_nc"])
+                st.success(
+                    f"Prior year loaded: {st.session_state.YOY['date_min']} → "
+                    f"{st.session_state.YOY['date_max']} "
+                    f"({st.session_state.YOY['n_days']} days)"
+                )
+            except Exception as e:
+                st.error(str(e))
+
+    if st.session_state.YOY:
+        show_yoy = st.toggle("Show YoY lines on chart", value=True)
+    else:
+        show_yoy = False
+        st.caption("Upload a prior year CSV to enable YoY.")
+
+    st.divider()
     st.caption(f"Optimised n = {D['n_opt']:,}  ·  No-change n = {D['n_nc']:,}")
     st.caption("Batch 1: 8 Apr  ·  Batch 2: 16 Apr")
 
 # ── FILTER DATA ───────────────────────────────────────────────────────────────
 
+YOY = st.session_state.YOY
 F = get_filtered(D, from_date, to_date, l1_filter)
 mm = METRIC_META[metric]
 
@@ -310,23 +448,39 @@ st.subheader(mm["label"])
 
 fig = go.Figure()
 
-# Traces
+# Current-year traces
 fig.add_trace(go.Scatter(
     x=F["iso"], y=F["opt"][metric],
-    name=f"Optimised (n={D['n_opt']:,})",
+    name=f"Opt 2026 (n={D['n_opt']:,})",
     line=dict(color="#2563EB", width=2),
     fill="tozeroy", fillcolor="rgba(37,99,235,0.05)",
-    hovertemplate="%{x}<br>Opt: %{y:.3f}<extra></extra>",
+    hovertemplate="%{x}<br>Opt 2026: %{y:.3f}<extra></extra>",
 ))
 fig.add_trace(go.Scatter(
     x=F["iso"], y=F["nc"][metric],
-    name=f"No change (n={D['n_nc']:,})",
+    name=f"NC 2026 (n={D['n_nc']:,})",
     line=dict(color="#94A3B8", width=1.5, dash="dot"),
     fill="tozeroy", fillcolor="rgba(148,163,184,0.03)",
-    hovertemplate="%{x}<br>NC: %{y:.3f}<extra></extra>",
+    hovertemplate="%{x}<br>NC 2026: %{y:.3f}<extra></extra>",
 ))
 
-# Batch markers — add_vline annotation kwargs vary by Plotly version; use add_shape + add_annotation instead
+# YoY prior-year traces (same product IDs, dates offset +364 days)
+if YOY and show_yoy:
+    opt_yoy, nc_yoy = get_yoy_series(YOY, F["iso"], metric)
+    fig.add_trace(go.Scatter(
+        x=F["iso"], y=opt_yoy,
+        name="Opt prior year",
+        line=dict(color="#93C5FD", width=1.5, dash="dash"),
+        hovertemplate="%{x}<br>Opt prior yr: %{y:.3f}<extra></extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=F["iso"], y=nc_yoy,
+        name="NC prior year",
+        line=dict(color="#CBD5E1", width=1.2, dash="dash"),
+        hovertemplate="%{x}<br>NC prior yr: %{y:.3f}<extra></extra>",
+    ))
+
+# Batch markers
 for batch_date, label, colour in [(BATCH1, "Batch 1", "#7C3AED"), (BATCH2, "Batch 2", "#059669")]:
     if batch_date in F["iso"]:
         fig.add_shape(
@@ -354,6 +508,112 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+# ── YoY INSIGHTS ──────────────────────────────────────────────────────────────
+
+if YOY:
+    ins = yoy_insights(F, YOY, metric)
+    st.subheader("Year-on-year insights")
+    st.caption(
+        f"Comparing current period to the same window in the prior year "
+        f"(dates aligned +364 days / 52 weeks to preserve day-of-week patterns). "
+        f"Prior year: {YOY['date_min']} → {YOY['date_max']}."
+    )
+
+    dp = mm["dp"]
+    pfx = "$" if metric == "val" else ""
+
+    ic1, ic2, ic3 = st.columns(3)
+
+    def delta_colour(pct):
+        if pct is None: return "off"
+        return "normal" if pct >= 0 else "inverse"
+
+    def fmt_pct(pct):
+        if pct is None: return "n/a"
+        return f"{pct:+.1f}%"
+
+    with ic1:
+        st.metric(
+            "Optimised — YoY change",
+            value=f"{pfx}{ins['opt_curr']:.{dp}f}" if ins["opt_curr"] is not None else "—",
+            delta=fmt_pct(ins["opt_yoy_pct"]),
+            delta_color=delta_colour(ins["opt_yoy_pct"]),
+        )
+        if ins["opt_prev"] is not None:
+            st.caption(f"Prior year avg: {pfx}{ins['opt_prev']:.{dp}f}")
+
+    with ic2:
+        st.metric(
+            "No-change — YoY change",
+            value=f"{pfx}{ins['nc_curr']:.{dp}f}" if ins["nc_curr"] is not None else "—",
+            delta=fmt_pct(ins["nc_yoy_pct"]),
+            delta_color=delta_colour(ins["nc_yoy_pct"]),
+        )
+        if ins["nc_prev"] is not None:
+            st.caption(f"Prior year avg: {pfx}{ins['nc_prev']:.{dp}f}")
+
+    with ic3:
+        lift = None
+        if ins["opt_yoy_pct"] is not None and ins["nc_yoy_pct"] is not None:
+            lift = ins["opt_yoy_pct"] - ins["nc_yoy_pct"]
+        st.metric(
+            "YoY lift from colour titles",
+            value=fmt_pct(lift),
+            help="Optimised group YoY % minus No-change group YoY %. Positive = title changes drove incremental improvement above the market baseline.",
+        )
+        if lift is not None:
+            if lift > 0:
+                st.caption(f"Optimised products grew {lift:.1f}pp more than unchanged products YoY.")
+            elif lift < 0:
+                st.caption(f"Optimised products grew {abs(lift):.1f}pp less than unchanged products YoY.")
+            else:
+                st.caption("No differential lift detected over this period.")
+
+    # Narrative
+    def narrate(ins, metric_label):
+        lines = []
+        o, n = ins["opt_yoy_pct"], ins["nc_yoy_pct"]
+        lift = (o - n) if (o is not None and n is not None) else None
+        if o is not None:
+            dir_o = "up" if o >= 0 else "down"
+            lines.append(
+                f"**Optimised products** are {dir_o} **{o:+.1f}%** YoY on {metric_label.lower()}."
+            )
+        if n is not None:
+            dir_n = "up" if n >= 0 else "down"
+            lines.append(
+                f"**No-change products** are {dir_n} **{n:+.1f}%** YoY — "
+                f"this is the market baseline for the same period."
+            )
+        if lift is not None:
+            if lift > 2:
+                lines.append(
+                    f"The **{lift:.1f}pp differential** suggests colour title additions drove "
+                    f"incremental performance above the baseline. Note: the optimised and no-change "
+                    f"groups differ in composition, so product-mix effects may contribute."
+                )
+            elif lift < -2:
+                lines.append(
+                    f"The **{lift:.1f}pp gap** shows the optimised group underperformed the baseline YoY. "
+                    f"This could reflect product-mix differences or that the title changes haven't yet "
+                    f"had time to fully index."
+                )
+            else:
+                lines.append(
+                    f"The **{lift:.1f}pp differential** is small — the two groups moved broadly in line YoY. "
+                    f"A longer post-batch window will give a cleaner read."
+                )
+        return "  \n".join(lines)
+
+    with st.expander("Interpretation", expanded=True):
+        st.markdown(narrate(ins, mm["label"]))
+        st.caption(
+            "⚠️ Prior year data uses the same product ID lookup. In the prior year, "
+            "optimised products had their original (non-colour) titles — so the YoY "
+            "delta for that group reflects the combined effect of title changes and "
+            "any market movement."
+        )
 
 # ── TABLE ─────────────────────────────────────────────────────────────────────
 
