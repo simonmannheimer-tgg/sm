@@ -224,14 +224,37 @@ with st.sidebar:
 
     st.divider()
 
-    range_opt = st.radio("Date range", ["All", "Pre-batch", "Post-batch 1", "Post-batch 2"], index=0)
-    range_map = {
-        "All":          ("", ""),
-        "Pre-batch":    ("2026-01-21", "2026-04-07"),
-        "Post-batch 1": ("2026-04-08", "2026-04-19"),
-        "Post-batch 2": ("2026-04-16", "2026-04-19"),
+    all_dates = [datetime.strptime(d, "%Y-%m-%d").date() for d in D["iso"]]
+    min_date, max_date = all_dates[0], all_dates[-1]
+
+    preset = st.radio(
+        "Quick range",
+        ["All", "Pre-batch", "Post-batch 1", "Post-batch 2", "Custom"],
+        index=0, horizontal=True,
+    )
+    preset_map = {
+        "All":          (min_date, max_date),
+        "Pre-batch":    (min_date, datetime.strptime("2026-04-07", "%Y-%m-%d").date()),
+        "Post-batch 1": (datetime.strptime("2026-04-08", "%Y-%m-%d").date(), max_date),
+        "Post-batch 2": (datetime.strptime("2026-04-16", "%Y-%m-%d").date(), max_date),
+        "Custom":       (min_date, max_date),
     }
-    from_date, to_date = range_map[range_opt]
+    default_range = preset_map[preset]
+
+    date_range = st.date_input(
+        "Date range",
+        value=default_range,
+        min_value=min_date,
+        max_value=max_date,
+    )
+
+    if isinstance(date_range, (list, tuple)) and len(date_range) == 2:
+        from_date = date_range[0].strftime("%Y-%m-%d")
+        to_date   = date_range[1].strftime("%Y-%m-%d")
+    elif hasattr(date_range, "strftime"):
+        from_date = to_date = date_range.strftime("%Y-%m-%d")
+    else:
+        from_date, to_date = D["iso"][0], D["iso"][-1]
 
     l1_options = ["All categories"] + sorted(D["taxonomy"].keys())
     l1_sel = st.selectbox("Category (L1)", l1_options)
