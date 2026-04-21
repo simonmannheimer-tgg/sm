@@ -303,13 +303,19 @@ fig.add_trace(go.Scatter(
     hovertemplate="%{x}<br>NC: %{y:.3f}<extra></extra>",
 ))
 
-# Batch markers
+# Batch markers — add_vline annotation kwargs vary by Plotly version; use add_shape + add_annotation instead
 for batch_date, label, colour in [(BATCH1, "Batch 1", "#7C3AED"), (BATCH2, "Batch 2", "#059669")]:
     if batch_date in F["iso"]:
-        fig.add_vline(
-            x=batch_date, line_dash="dash", line_color=colour, line_width=1.5, opacity=0.7,
-            annotation_text=label, annotation_position="top",
-            annotation_font=dict(color=colour, size=11),
+        fig.add_shape(
+            type="line", x0=batch_date, x1=batch_date, y0=0, y1=1,
+            xref="x", yref="paper",
+            line=dict(color=colour, width=1.5, dash="dash"),
+            opacity=0.7,
+        )
+        fig.add_annotation(
+            x=batch_date, y=1, xref="x", yref="paper",
+            text=label, showarrow=False, yanchor="bottom",
+            font=dict(color=colour, size=11),
         )
 
 fig.update_layout(
