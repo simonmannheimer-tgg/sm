@@ -104,7 +104,6 @@ td.cell.active{outline:2px solid #fff;outline-offset:1px}
 .tab-btn.active{border-bottom-color:var(--blue);color:var(--text)}
 .tab-btn:hover:not(.active){color:var(--text)}
 .pane{display:none}.pane.active{display:block}
-.flow-wrap{padding:24px;overflow:auto;max-height:calc(100vh - 100px)}
 
 </style>
 </head>
@@ -133,165 +132,193 @@ td.cell.active{outline:2px solid #fff;outline-offset:1px}
 </div>
 
 
-<div class="tab-bar">
-  <button class="tab-btn active" data-tab="matrix">State Matrix</button>
-  <button class="tab-btn" data-tab="flow">Decision Flow</button>
-</div>
+<div class="tab-bar"><button class="tab-btn active" data-tab="matrix">State Matrix</button><button class="tab-btn" data-tab="flow">Decision Flow</button></div>
 <div id="pane-matrix" class="pane active">
-<div class="wrap"><table id="mtable"></table></div></div>
-<div id="pane-flow" class="pane">
-<div class="flow-wrap">
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="980" viewBox="0 0 880 980" style="font-smoothing:antialiased">
-<defs>
-  <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L8,3 z" fill="#2a3f5a"/>
-  </marker>
-  <marker id="arr-b" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-    <path d="M0,0 L0,6 L8,3 z" fill="#3b82f6"/>
-  </marker>
-</defs>
-<line x1="0" y1="548.0" x2="880" y2="548.0" stroke="#1e293b" stroke-width="1"/>
-<text x="95.0" y="14" fill="#475569" font-family="'Inter',system-ui,sans-serif" font-size="9" font-weight="700" text-anchor="middle">PURCHASE STATE</text>
-<text x="315.5" y="14" fill="#475569" font-family="'Inter',system-ui,sans-serif" font-size="9" font-weight="700" text-anchor="middle">LIFECYCLE</text>
-<text x="655.0" y="14" fill="#475569" font-family="'Inter',system-ui,sans-serif" font-size="9" font-weight="700" text-anchor="middle">SCHEMA OUTPUT</text>
-<line x1="0" y1="680.0" x2="880" y2="680.0" stroke="#1e293b" stroke-width="1"/>
-<line x1="0" y1="724.0" x2="880" y2="724.0" stroke="#1e293b" stroke-width="1"/>
-<line x1="0" y1="768.0" x2="880" y2="768.0" stroke="#1e293b" stroke-width="1"/>
-<line x1="0" y1="812.0" x2="880" y2="812.0" stroke="#1e293b" stroke-width="1"/>
-<line x1="0" y1="856.0" x2="880" y2="856.0" stroke="#1e293b" stroke-width="1"/>
-<line x1="0" y1="900.0" x2="880" y2="900.0" stroke="#1e293b" stroke-width="1"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,74.0 218.0,74.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,162.0 218.0,162.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,250.0 218.0,250.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,316.0 218.0,316.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,360.0 218.0,360.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,404.0 218.0,404.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,448.0 218.0,448.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,492.0 218.0,492.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,294.0 C194.0,294.0 194.0,536.0 218.0,536.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,624.0 C194.0,624.0 194.0,580.0 218.0,580.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,624.0 C194.0,624.0 194.0,624.0 218.0,624.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,624.0 C194.0,624.0 194.0,668.0 218.0,668.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,756.0 C194.0,756.0 194.0,756.0 218.0,756.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,888.0 C194.0,888.0 194.0,888.0 218.0,888.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,712.0 C315.0,712.0 315.0,712.0 460.0,712.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,800.0 C315.0,800.0 315.0,800.0 460.0,800.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,844.0 C315.0,844.0 315.0,844.0 460.0,844.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M170.0,932.0 C315.0,932.0 315.0,932.0 460.0,932.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,74.0 C436.5,74.0 436.5,52.0 460.0,52.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,74.0 C436.5,74.0 436.5,96.0 460.0,96.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,162.0 C436.5,162.0 436.5,140.0 460.0,140.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,162.0 C436.5,162.0 436.5,184.0 460.0,184.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,250.0 C436.5,250.0 436.5,228.0 460.0,228.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,250.0 C436.5,250.0 436.5,272.0 460.0,272.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,316.0 C436.5,316.0 436.5,316.0 460.0,316.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,360.0 C436.5,360.0 436.5,360.0 460.0,360.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,404.0 C436.5,404.0 436.5,404.0 460.0,404.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,448.0 C436.5,448.0 436.5,448.0 460.0,448.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,492.0 C436.5,492.0 436.5,492.0 460.0,492.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,536.0 C436.5,536.0 436.5,536.0 460.0,536.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,580.0 C436.5,580.0 436.5,580.0 460.0,580.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,624.0 C436.5,624.0 436.5,624.0 460.0,624.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,668.0 C436.5,668.0 436.5,668.0 460.0,668.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,756.0 C436.5,756.0 436.5,756.0 460.0,756.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<path d="M413.0,888.0 C436.5,888.0 436.5,888.0 460.0,888.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
-<rect x="20.0" y="36.0" width="150" height="516" rx="7" fill="rgba(37,99,235,.2)" stroke="#3b82f6" stroke-width="1.5"/>
-<text x="95.0" y="294.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10.5" font-weight="700">ADD TO CART</text>
-<rect x="20.0" y="564.0" width="150" height="120" rx="7" fill="rgba(154,52,18,.2)" stroke="#f97316" stroke-width="1.5"/>
-<text x="95.0" y="624.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10.5" font-weight="700">SOLD OUT</text>
-<rect x="20.0" y="696.0" width="150" height="32" rx="7" fill="rgba(30,41,59,.6)" stroke="#475569" stroke-width="1.5"/>
-<text x="95.0" y="712.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10.5" font-weight="700">COMING SOON</text>
-<rect x="20.0" y="740.0" width="150" height="32" rx="7" fill="rgba(37,99,235,.15)" stroke="#60a5fa" stroke-width="1.5"/>
-<text x="95.0" y="756.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10.5" font-weight="700">PRE ORDER</text>
-<rect x="20.0" y="784.0" width="150" height="32" rx="7" fill="rgba(136,19,55,.15)" stroke="#f43f5e" stroke-width="1.5"/>
-<text x="95.0" y="800.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10.5" font-weight="700">NOT AVAILABLE</text>
-<rect x="20.0" y="828.0" width="150" height="32" rx="7" fill="rgba(88,28,135,.15)" stroke="#a855f7" stroke-width="1.5"/>
-<text x="95.0" y="837.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10" font-weight="700">IN STORE</text>
-<text x="95.0" y="851.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10" font-weight="700">ONLY</text>
-<rect x="20.0" y="872.0" width="150" height="32" rx="7" fill="rgba(30,41,59,.6)" stroke="#475569" stroke-width="1.5"/>
-<text x="95.0" y="881.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10" font-weight="700">BUY AT</text>
-<text x="95.0" y="895.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10" font-weight="700">Miele</text>
-<rect x="20.0" y="916.0" width="150" height="32" rx="7" fill="rgba(30,41,59,.6)" stroke="#475569" stroke-width="1.5"/>
-<text x="95.0" y="932.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="10.5" font-weight="700">ORDER NOW</text>
-<rect x="218.0" y="36.0" width="195" height="76" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="74.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PARCELISED</text>
-<rect x="218.0" y="124.0" width="195" height="76" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="162.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">BIG-BULKY</text>
-<rect x="218.0" y="212.0" width="195" height="76" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="250.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PREMIUM</text>
-<rect x="218.0" y="300.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="316.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PREORDER-PL / CENTRALISED-PL</text>
-<rect x="218.0" y="344.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="360.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PREORDER-BB</text>
-<rect x="218.0" y="388.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="404.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">REGION-C-PL</text>
-<rect x="218.0" y="432.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="448.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">AGENCY-* / DROPSHIP-BB</text>
-<rect x="218.0" y="476.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="492.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">UNCLASSIFIED</text>
-<rect x="218.0" y="520.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="536.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">STAND-ALONE-SERVICE</text>
-<rect x="218.0" y="564.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="580.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PARCELISED</text>
-<rect x="218.0" y="608.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="624.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">BIG-BULKY</text>
-<rect x="218.0" y="652.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="668.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PREMIUM</text>
-<rect x="218.0" y="740.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="756.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PREORDER-PL</text>
-<rect x="218.0" y="872.0" width="195" height="32" rx="7" fill="rgba(15,23,42,.85)" stroke="#334155" stroke-width="1.2"/>
-<text x="315.5" y="888.0" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">AGENCY-Miele-PL / BB</text>
-<rect x="460.0" y="36.0" width="390" height="32" rx="7" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.2"/>
-<text x="655.0" y="45.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="600">IS_PO-Y or IS_PO-N</text>
-<text x="655.0" y="59.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:0 · T:1</text>
-<rect x="460.0" y="80.0" width="390" height="32" rx="7" fill="rgba(245,158,11,.11)" stroke="#f59e0b" stroke-width="1.2"/>
-<text x="655.0" y="89.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="600">OOS_PO-Y_LT7...</text>
-<text x="655.0" y="103.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:LLT · T:1</text>
-<rect x="460.0" y="124.0" width="390" height="32" rx="7" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.2"/>
-<text x="655.0" y="133.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="600">IS_PO-Y or IS_PO-N</text>
-<text x="655.0" y="147.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:0 · T:2</text>
-<rect x="460.0" y="168.0" width="390" height="32" rx="7" fill="rgba(245,158,11,.11)" stroke="#f59e0b" stroke-width="1.2"/>
-<text x="655.0" y="177.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="600">OOS_PO-Y_LT7...</text>
-<text x="655.0" y="191.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:LLT · T:2</text>
-<rect x="460.0" y="212.0" width="390" height="32" rx="7" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.2"/>
-<text x="655.0" y="221.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="600">IS_PO-Y or IS_PO-N</text>
-<text x="655.0" y="235.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:0 · T:2</text>
-<rect x="460.0" y="256.0" width="390" height="32" rx="7" fill="rgba(245,158,11,.11)" stroke="#f59e0b" stroke-width="1.2"/>
-<text x="655.0" y="265.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="600">OOS_PO-Y_LT7...</text>
-<text x="655.0" y="279.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:LLT · T:2</text>
-<rect x="460.0" y="300.0" width="390" height="32" rx="7" fill="rgba(96,165,250,.11)" stroke="#60a5fa" stroke-width="1.2"/>
-<text x="655.0" y="316.0" text-anchor="middle" dominant-baseline="middle" fill="#60a5fa" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PreOrder · H:days(release−today) · T:1</text>
-<rect x="460.0" y="344.0" width="390" height="32" rx="7" fill="rgba(96,165,250,.11)" stroke="#60a5fa" stroke-width="1.2"/>
-<text x="655.0" y="360.0" text-anchor="middle" dominant-baseline="middle" fill="#60a5fa" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PreOrder · H:days(release−today) · T:2</text>
-<rect x="460.0" y="388.0" width="390" height="32" rx="7" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.2"/>
-<text x="655.0" y="404.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">InStock · H:0 · T:3</text>
-<rect x="460.0" y="432.0" width="390" height="32" rx="7" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.2"/>
-<text x="655.0" y="448.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">Remove avail + seller + shippingDetails</text>
-<rect x="460.0" y="476.0" width="390" height="32" rx="7" fill="rgba(20,184,166,.11)" stroke="#14b8a6" stroke-width="1.2"/>
-<text x="655.0" y="492.0" text-anchor="middle" dominant-baseline="middle" fill="#14b8a6" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">InStock · Remove shippingDetails</text>
-<rect x="460.0" y="520.0" width="390" height="32" rx="7" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.2"/>
-<text x="655.0" y="536.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">No schema output</text>
-<rect x="460.0" y="564.0" width="390" height="32" rx="7" fill="rgba(249,115,22,.11)" stroke="#f97316" stroke-width="1.2"/>
-<text x="655.0" y="580.0" text-anchor="middle" dominant-baseline="middle" fill="#f97316" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">OutOfStock · H:61 · T:1</text>
-<rect x="460.0" y="608.0" width="390" height="32" rx="7" fill="rgba(249,115,22,.11)" stroke="#f97316" stroke-width="1.2"/>
-<text x="655.0" y="624.0" text-anchor="middle" dominant-baseline="middle" fill="#f97316" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">OutOfStock · H:61 · T:2</text>
-<rect x="460.0" y="652.0" width="390" height="32" rx="7" fill="rgba(249,115,22,.11)" stroke="#f97316" stroke-width="1.2"/>
-<text x="655.0" y="668.0" text-anchor="middle" dominant-baseline="middle" fill="#f97316" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">OutOfStock · H:61 · T:2</text>
-<rect x="460.0" y="696.0" width="390" height="32" rx="7" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.2"/>
-<text x="655.0" y="712.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">Remove entire offers block</text>
-<rect x="460.0" y="740.0" width="390" height="32" rx="7" fill="rgba(96,165,250,.11)" stroke="#60a5fa" stroke-width="1.2"/>
-<text x="655.0" y="756.0" text-anchor="middle" dominant-baseline="middle" fill="#60a5fa" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">PreOrder · H:days(release−today) · T:1</text>
-<rect x="460.0" y="784.0" width="390" height="32" rx="7" fill="rgba(244,63,94,.11)" stroke="#f43f5e" stroke-width="1.2"/>
-<text x="655.0" y="800.0" text-anchor="middle" dominant-baseline="middle" fill="#f43f5e" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">Discontinued · Remove shippingDetails</text>
-<rect x="460.0" y="828.0" width="390" height="32" rx="7" fill="rgba(168,85,247,.11)" stroke="#a855f7" stroke-width="1.2"/>
-<text x="655.0" y="844.0" text-anchor="middle" dominant-baseline="middle" fill="#a855f7" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">InStoreOnly · Remove shippingDetails</text>
-<rect x="460.0" y="872.0" width="390" height="32" rx="7" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.2"/>
-<text x="655.0" y="888.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">Remove avail + seller + shippingDetails</text>
-<rect x="460.0" y="916.0" width="390" height="32" rx="7" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.2"/>
-<text x="655.0" y="932.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">No schema output</text>
-</svg>
-</div>
-</div>
+<div class="wrap"><table id="mtable"></table></div>
+</div></div>
+<div id="pane-flow" class="pane"><div style="padding:28px 32px;overflow:auto;max-height:calc(100vh - 56px)"><svg xmlns="http://www.w3.org/2000/svg" width="960" height="1490" viewBox="0 0 960 1490">
+<defs><marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#2a3f5a"/></marker></defs>
+<text x="101.0" y="22" fill="#3a5070" font-family="'Inter',system-ui,sans-serif" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">PURCHASE STATE</text>
+<text x="345.0" y="22" fill="#3a5070" font-family="'Inter',system-ui,sans-serif" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">LIFECYCLE</text>
+<text x="718.0" y="22" fill="#3a5070" font-family="'Inter',system-ui,sans-serif" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">SCHEMA OUTPUT</text>
+<line x1="0" y1="803.0" x2="960" y2="803.0" stroke="#1a2535" stroke-width="1.5"/>
+<line x1="0" y1="1007.0" x2="960" y2="1007.0" stroke="#1a2535" stroke-width="1.5"/>
+<line x1="0" y1="1087.0" x2="960" y2="1087.0" stroke="#1a2535" stroke-width="1.5"/>
+<line x1="0" y1="1167.0" x2="960" y2="1167.0" stroke="#1a2535" stroke-width="1.5"/>
+<line x1="0" y1="1247.0" x2="960" y2="1247.0" stroke="#1a2535" stroke-width="1.5"/>
+<line x1="0" y1="1327.0" x2="960" y2="1327.0" stroke="#1a2535" stroke-width="1.5"/>
+<line x1="0" y1="1407.0" x2="960" y2="1407.0" stroke="#1a2535" stroke-width="1.5"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,98.0 240.0,98.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,222.0 240.0,222.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,346.0 240.0,346.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,439.0 240.0,439.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,501.0 240.0,501.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,563.0 240.0,563.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,625.0 240.0,625.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,687.0 240.0,687.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,408.0 C213.9,408.0 213.9,749.0 240.0,749.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,891.0 C213.9,891.0 213.9,829.0 240.0,829.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,891.0 C213.9,891.0 213.9,891.0 240.0,891.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,891.0 C213.9,891.0 213.9,953.0 240.0,953.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,1113.0 C213.9,1113.0 213.9,1113.0 240.0,1113.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,1353.0 C213.9,1353.0 213.9,1353.0 240.0,1353.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,1033.0 C366.8,1033.0 366.8,1033.0 518.0,1033.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,1193.0 C366.8,1193.0 366.8,1193.0 518.0,1193.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,1273.0 C366.8,1273.0 366.8,1273.0 518.0,1273.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M182.0,1433.0 C366.8,1433.0 366.8,1433.0 518.0,1433.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,98.0 C487.4,98.0 487.4,67.0 518.0,67.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,98.0 C487.4,98.0 487.4,129.0 518.0,129.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,222.0 C487.4,222.0 487.4,191.0 518.0,191.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,222.0 C487.4,222.0 487.4,253.0 518.0,253.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,346.0 C487.4,346.0 487.4,315.0 518.0,315.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,346.0 C487.4,346.0 487.4,377.0 518.0,377.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,439.0 C487.4,439.0 487.4,439.0 518.0,439.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,501.0 C487.4,501.0 487.4,501.0 518.0,501.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,563.0 C487.4,563.0 487.4,563.0 518.0,563.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,625.0 C487.4,625.0 487.4,625.0 518.0,625.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,687.0 C487.4,687.0 487.4,687.0 518.0,687.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,749.0 C487.4,749.0 487.4,749.0 518.0,749.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,829.0 C487.4,829.0 487.4,829.0 518.0,829.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,891.0 C487.4,891.0 487.4,891.0 518.0,891.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,953.0 C487.4,953.0 487.4,953.0 518.0,953.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,1113.0 C487.4,1113.0 487.4,1113.0 518.0,1113.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M450.0,1353.0 C487.4,1353.0 487.4,1353.0 518.0,1353.0" fill="none" stroke="#2a3f5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="20.0" y="50.0" width="162" height="716.0" rx="8" fill="rgba(37,99,235,.2)" stroke="#3b82f6" stroke-width="2"/>
+<text x="101.0" y="399.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">ADD TO</text>
+<text x="101.0" y="417.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">CART</text>
+<rect x="20.0" y="812.0" width="162" height="158.0" rx="8" fill="rgba(154,52,18,.2)" stroke="#f97316" stroke-width="2"/>
+<text x="101.0" y="891.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">SOLD OUT</text>
+<rect x="20.0" y="1016.0" width="162" height="34.0" rx="8" fill="rgba(30,41,59,.6)" stroke="#475569" stroke-width="2"/>
+<text x="101.0" y="1033.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">COMING SOON</text>
+<rect x="20.0" y="1096.0" width="162" height="34.0" rx="8" fill="rgba(37,99,235,.15)" stroke="#60a5fa" stroke-width="2"/>
+<text x="101.0" y="1113.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">PRE ORDER</text>
+<rect x="20.0" y="1176.0" width="162" height="34.0" rx="8" fill="rgba(136,19,55,.15)" stroke="#f43f5e" stroke-width="2"/>
+<text x="101.0" y="1193.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">NOT AVAILABLE</text>
+<rect x="20.0" y="1256.0" width="162" height="34.0" rx="8" fill="rgba(88,28,135,.15)" stroke="#a855f7" stroke-width="2"/>
+<text x="101.0" y="1273.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">IN STORE ONLY</text>
+<rect x="20.0" y="1336.0" width="162" height="34.0" rx="8" fill="rgba(30,41,59,.6)" stroke="#475569" stroke-width="2"/>
+<text x="101.0" y="1353.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">BUY AT Miele</text>
+<rect x="20.0" y="1416.0" width="162" height="34.0" rx="8" fill="rgba(30,41,59,.6)" stroke="#475569" stroke-width="2"/>
+<text x="101.0" y="1433.0" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-family="Inter",system-ui,sans-serif font-size="11" font-weight="700">ORDER NOW</text>
+<rect x="240.0" y="50.0" width="210" height="96.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="98.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PARCELISED</text>
+<rect x="240.0" y="174.0" width="210" height="96.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="222.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">BIG-BULKY</text>
+<rect x="240.0" y="298.0" width="210" height="96.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="346.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PREMIUM</text>
+<rect x="240.0" y="422.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="439.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PREORDER-PL / CENTRALISED-PL</text>
+<rect x="240.0" y="484.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="501.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PREORDER-BB</text>
+<rect x="240.0" y="546.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="563.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">REGION-C-PL</text>
+<rect x="240.0" y="608.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="625.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">AGENCY-* / DROPSHIP-BB</text>
+<rect x="240.0" y="670.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="687.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">UNCLASSIFIED</text>
+<rect x="240.0" y="732.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="749.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">STAND-ALONE-SERVICE</text>
+<rect x="240.0" y="812.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="829.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PARCELISED</text>
+<rect x="240.0" y="874.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="891.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">BIG-BULKY</text>
+<rect x="240.0" y="936.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="953.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PREMIUM</text>
+<rect x="240.0" y="1096.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="1113.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PREORDER-PL</text>
+<rect x="240.0" y="1336.0" width="210" height="34.0" rx="8" fill="rgba(15,23,42,.9)" stroke="#2d4060" stroke-width="1.5"/>
+<text x="345.0" y="1353.0" text-anchor="middle" dominant-baseline="middle" fill="#7ea3cc" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">AGENCY-Miele-PL / BB</text>
+<g onclick="openDrawer('atc_pi')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="50.0" width="400" height="34" rx="8" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.5"/>
+<text x="718.0" y="59.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">IS_PO-Y or IS_PO-N</text>
+<text x="718.0" y="75.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:0 · T:1</text>
+</g>
+<g onclick="openDrawer('atc_po')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="112.0" width="400" height="34" rx="8" fill="rgba(245,158,11,.11)" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="718.0" y="121.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">OOS_PO-Y_LT7...</text>
+<text x="718.0" y="137.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:LLT · T:1</text>
+</g>
+<g onclick="openDrawer('atc_bi')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="174.0" width="400" height="34" rx="8" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.5"/>
+<text x="718.0" y="183.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">IS_PO-Y or IS_PO-N</text>
+<text x="718.0" y="199.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:0 · T:2</text>
+</g>
+<g onclick="openDrawer('atc_bo')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="236.0" width="400" height="34" rx="8" fill="rgba(245,158,11,.11)" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="718.0" y="245.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">OOS_PO-Y_LT7...</text>
+<text x="718.0" y="261.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:LLT · T:2</text>
+</g>
+<g onclick="openDrawer('atc_mi')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="298.0" width="400" height="34" rx="8" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.5"/>
+<text x="718.0" y="307.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">IS_PO-Y or IS_PO-N</text>
+<text x="718.0" y="323.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:0 · T:2</text>
+</g>
+<g onclick="openDrawer('atc_mo')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="360.0" width="400" height="34" rx="8" fill="rgba(245,158,11,.11)" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="718.0" y="369.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9.5" font-weight="600">OOS_PO-Y_LT7...</text>
+<text x="718.0" y="385.0" text-anchor="middle" dominant-baseline="middle" fill="#f59e0b" font-family="IBM Plex Mono",monospace font-size="9" font-weight="500">InStock · H:LLT · T:2</text>
+</g>
+<g onclick="openDrawer('atc_pp')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="422.0" width="400" height="34" rx="8" fill="rgba(96,165,250,.11)" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="718.0" y="439.0" text-anchor="middle" dominant-baseline="middle" fill="#60a5fa" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PreOrder · H:days(release&#8722;today) · T:1</text>
+</g>
+<g onclick="openDrawer('atc_pb')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="484.0" width="400" height="34" rx="8" fill="rgba(96,165,250,.11)" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="718.0" y="501.0" text-anchor="middle" dominant-baseline="middle" fill="#60a5fa" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PreOrder · H:days(release&#8722;today) · T:2</text>
+</g>
+<g onclick="openDrawer('atc_rc')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="546.0" width="400" height="34" rx="8" fill="rgba(34,197,94,.11)" stroke="#22c55e" stroke-width="1.5"/>
+<text x="718.0" y="563.0" text-anchor="middle" dominant-baseline="middle" fill="#22c55e" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">InStock · H:0 · T:3</text>
+</g>
+<g onclick="openDrawer('atc_ag')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="608.0" width="400" height="34" rx="8" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.5"/>
+<text x="718.0" y="625.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">Remove avail + seller + shippingDetails</text>
+</g>
+<g onclick="openDrawer('atc_un')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="670.0" width="400" height="34" rx="8" fill="rgba(20,184,166,.11)" stroke="#14b8a6" stroke-width="1.5"/>
+<text x="718.0" y="687.0" text-anchor="middle" dominant-baseline="middle" fill="#14b8a6" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">InStock · Remove shippingDetails</text>
+</g>
+<g onclick="openDrawer('atc_sv')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="732.0" width="400" height="34" rx="8" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.5"/>
+<text x="718.0" y="749.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">No schema output</text>
+</g>
+<g onclick="openDrawer('so_p')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="812.0" width="400" height="34" rx="8" fill="rgba(249,115,22,.11)" stroke="#f97316" stroke-width="1.5"/>
+<text x="718.0" y="829.0" text-anchor="middle" dominant-baseline="middle" fill="#f97316" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">OutOfStock · H:61 · T:1</text>
+</g>
+<g onclick="openDrawer('so_b')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="874.0" width="400" height="34" rx="8" fill="rgba(249,115,22,.11)" stroke="#f97316" stroke-width="1.5"/>
+<text x="718.0" y="891.0" text-anchor="middle" dominant-baseline="middle" fill="#f97316" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">OutOfStock · H:61 · T:2</text>
+</g>
+<g onclick="openDrawer('so_m')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="936.0" width="400" height="34" rx="8" fill="rgba(249,115,22,.11)" stroke="#f97316" stroke-width="1.5"/>
+<text x="718.0" y="953.0" text-anchor="middle" dominant-baseline="middle" fill="#f97316" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">OutOfStock · H:61 · T:2</text>
+</g>
+<g onclick="openDrawer('cs')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="1016.0" width="400" height="34" rx="8" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.5"/>
+<text x="718.0" y="1033.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">Remove entire offers block</text>
+</g>
+<g onclick="openDrawer('po_pp')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="1096.0" width="400" height="34" rx="8" fill="rgba(96,165,250,.11)" stroke="#60a5fa" stroke-width="1.5"/>
+<text x="718.0" y="1113.0" text-anchor="middle" dominant-baseline="middle" fill="#60a5fa" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">PreOrder · H:days(release&#8722;today) · T:1</text>
+</g>
+<g onclick="openDrawer('na')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="1176.0" width="400" height="34" rx="8" fill="rgba(244,63,94,.11)" stroke="#f43f5e" stroke-width="1.5"/>
+<text x="718.0" y="1193.0" text-anchor="middle" dominant-baseline="middle" fill="#f43f5e" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">Discontinued · Remove shippingDetails</text>
+</g>
+<g onclick="openDrawer('iso')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="1256.0" width="400" height="34" rx="8" fill="rgba(168,85,247,.11)" stroke="#a855f7" stroke-width="1.5"/>
+<text x="718.0" y="1273.0" text-anchor="middle" dominant-baseline="middle" fill="#a855f7" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">InStoreOnly · Remove shippingDetails</text>
+</g>
+<g onclick="openDrawer('miele')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="1336.0" width="400" height="34" rx="8" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.5"/>
+<text x="718.0" y="1353.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">Remove avail + seller + shippingDetails</text>
+</g>
+<g onclick="openDrawer('on')" style="cursor:pointer" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">
+<rect x="518.0" y="1416.0" width="400" height="34" rx="8" fill="rgba(71,85,105,.11)" stroke="#475569" stroke-width="1.5"/>
+<text x="718.0" y="1433.0" text-anchor="middle" dominant-baseline="middle" fill="#475569" font-family="IBM Plex Mono",monospace font-size="10" font-weight="600">No schema output</text>
+</g>
+</svg></div></div>
 
 <div class="overlay" id="overlay">
   <div class="drawer" id="drawer">
