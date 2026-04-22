@@ -99,22 +99,16 @@ td.cell.active{outline:2px solid #fff;outline-offset:1px}
 .sb-r{background:#450a0a;color:#fca5a5}
 .dpath{font-size:9px;color:var(--dim);font-family:var(--mono)}
 
-/* Full-height layout */
+/* Fill viewport — no size changes, just layout */
 html,body{height:100%;margin:0;overflow:hidden}
 body{display:flex;flex-direction:column}
 .hd{flex-shrink:0}
-
-/* Tabs */
 .tab-bar{background:var(--bg2);border-bottom:1px solid var(--b);display:flex;flex-shrink:0;padding:0 20px;position:relative;z-index:40}
 .tab-btn{background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3px;margin-bottom:-1px;padding:11px 18px;transition:color .15s,border-color .15s}
 .tab-btn.active{border-bottom-color:var(--blue);color:var(--text)}
 .tab-btn:hover:not(.active){color:var(--text)}
-
-/* Panes fill remaining height */
 .pane{display:none}
 .pane.active{display:block;flex:1;overflow:auto;min-height:0}
-
-/* Logo */
 .logo-img{height:28px;width:auto;object-fit:contain;display:block;filter:brightness(1.1)}
 
 </style>
@@ -126,7 +120,7 @@ body{display:flex;flex-direction:column}
     <div class="hdr-title">TGG Delivery Schema — Implementation Guide</div>
     <div class="hdr-sub">schema.org Offer block per purchase state and lifecycle</div>
   </div>
-  <div class="tgg-badge">The Good Guys</div>
+  <div class="tgg-badge"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Good_Guys_logo_older.svg" class="logo-img" alt="The Good Guys"/></div>
 </div>
 
 <div class="legend">
@@ -148,7 +142,7 @@ body{display:flex;flex-direction:column}
 <div id="pane-matrix" class="pane">
 <div class="wrap"><table id="mtable"></table></div>
 </div></div>
-<div id="pane-flow" class="pane active"><div style="padding:24px 28px"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 960 1490" style="display:block">
+<div id="pane-flow" class="pane active"><div style="padding:24px 28px"><svg xmlns="http://www.w3.org/2000/svg" width="960" height="1490" viewBox="0 0 960 1490">
 <defs><marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#2a3f5a"/></marker></defs>
 <text x="101.0" y="22" fill="#3a5070" font-family="'Inter',system-ui,sans-serif" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">PURCHASE STATE</text>
 <text x="345.0" y="22" fill="#3a5070" font-family="'Inter',system-ui,sans-serif" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1">LIFECYCLE</text>
