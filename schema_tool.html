@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TGG Delivery Schema — Implementation Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080d17;--bg2:#0f1623;--bg3:#161f2e;
+  --b:#1e2d42;--bh:#2d4a6e;
+  --text:#e2e8f0;--muted:#64748b;--dim:#475569;
+  --green:#16a34a;--green-bg:#052e16;
+  --amber:#d97706;--amber-bg:#1c1507;
+  --blue:#3b82f6;--blue-bg:#172554;
+  --oos:#dc2626;--oos-bg:#450a0a;
+  --rose:#be123c;--rose-bg:#4c0519;
+  --purple:#7c3aed;--purple-bg:#2e1065;
+  --teal:#0d9488;--teal-bg:#042f2e;
+  --gray:#374151;--gray-bg:#111827;
+  --token:#fbbf24;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.5;min-height:100vh}
+.hdr{padding:14px 24px;border-bottom:1px solid var(--b);background:var(--bg2);display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+.hdr-title{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.hdr-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.tgg-badge{font-size:10px;font-weight:800;color:#fff;background:#0055A5;padding:3px 10px;border-radius:4px;margin-left:auto}
+.legend{padding:9px 24px;background:var(--bg2);border-bottom:1px solid var(--b);display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.leg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.leg-sep{width:1px;height:12px;background:var(--b);margin:0 2px}
+.leg-hint{margin-left:auto;font-size:10px;color:var(--dim)}
+.wrap{padding:18px 24px;overflow-x:auto}
+table{border-collapse:separate;border-spacing:4px;min-width:1900px}
+thead th{background:var(--bg3);border:1px solid var(--b);border-radius:5px;padding:8px 10px;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;text-align:center;vertical-align:middle}
+thead th.rh{text-align:left;min-width:145px}
+tbody th{background:var(--bg3);border:1px solid var(--b);border-radius:5px;padding:0 14px;font-size:11px;font-weight:600;white-space:nowrap;text-align:left;vertical-align:middle;min-width:140px;height:56px}
+td.cell{border-radius:6px;border:1px solid;padding:0;cursor:pointer;transition:transform .1s,box-shadow .15s;min-width:145px;height:64px;text-align:center;vertical-align:middle}
+td.cell:hover{transform:translateY(-2px)}
+td.cell.na{opacity:.2;cursor:default;background:var(--bg);border-color:var(--b)}
+td.cell.na:hover{transform:none}
+td.cell.active{outline:2px solid #fff;outline-offset:1px}
+.cell-lbl{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.3px;line-height:1.4;padding:5px 7px}
+.ci  {background:var(--green-bg);border-color:var(--green)}
+.ci  .cell-lbl{color:var(--green)}
+.ci:hover{box-shadow:0 4px 16px rgba(22,163,74,.3),0 0 0 1px var(--green)}
+.cil {background:var(--amber-bg);border-color:var(--amber)}
+.cil .cell-lbl{color:var(--amber)}
+.cil:hover{box-shadow:0 4px 16px rgba(217,119,6,.3),0 0 0 1px var(--amber)}
+.cp  {background:var(--blue-bg);border-color:var(--blue)}
+.cp  .cell-lbl{color:var(--blue)}
+.cp:hover{box-shadow:0 4px 16px rgba(59,130,246,.3),0 0 0 1px var(--blue)}
+.co  {background:var(--oos-bg);border-color:var(--oos)}
+.co  .cell-lbl{color:var(--oos)}
+.co:hover{box-shadow:0 4px 16px rgba(220,38,38,.3),0 0 0 1px var(--oos)}
+.cd  {background:var(--rose-bg);border-color:var(--rose)}
+.cd  .cell-lbl{color:var(--rose)}
+.cd:hover{box-shadow:0 4px 16px rgba(190,18,60,.3),0 0 0 1px var(--rose)}
+.cis {background:var(--teal-bg);border-color:var(--teal)}
+.cis .cell-lbl{color:var(--teal)}
+.cis:hover{box-shadow:0 4px 16px rgba(13,148,136,.3),0 0 0 1px var(--teal)}
+.cin {background:var(--purple-bg);border-color:var(--purple)}
+.cin .cell-lbl{color:var(--purple)}
+.cin:hover{box-shadow:0 4px 16px rgba(124,58,237,.3),0 0 0 1px var(--purple)}
+.cx  {background:var(--gray-bg);border-color:var(--gray)}
+.cx  .cell-lbl{color:var(--dim)}
+.cx:hover{box-shadow:0 4px 16px rgba(55,65,81,.3),0 0 0 1px var(--gray)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;display:none;backdrop-filter:blur(2px)}
+.overlay.open{display:flex;align-items:stretch;justify-content:flex-end}
+.drawer{background:var(--bg2);border-left:1px solid var(--b);width:50vw;min-width:480px;max-width:900px;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.d-hdr{padding:16px 20px 12px;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--bg2);z-index:10}
+.d-title{font-size:14px;font-weight:700;padding-right:34px;line-height:1.3}
+.d-sub{font-size:10px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+.d-close{position:absolute;top:14px;right:16px;background:var(--bg3);border:1px solid var(--b);color:var(--muted);width:26px;height:26px;border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.d-close:hover{color:var(--text);border-color:var(--bh)}
+.d-body{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.ds{background:var(--bg3);border:1px solid var(--b);border-radius:6px;overflow:hidden}
+.ds-title{font-size:9.5px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;padding:7px 12px;border-bottom:1px solid var(--b)}
+.df{display:grid;grid-template-columns:180px 1fr;border-bottom:1px solid var(--b);overflow:hidden}
+.df:last-of-type{border-bottom:none}
+.dk{font-size:10px;color:var(--dim);padding:8px 12px;font-family:var(--mono);border-right:1px solid var(--b);background:rgba(255,255,255,.015);display:flex;align-items:center}
+.dv{font-size:11px;padding:8px 12px;font-family:var(--mono);word-break:break-word;display:flex;align-items:flex-start;flex-direction:column;gap:3px;min-width:0;overflow:hidden}
+.dv.row{flex-direction:row;align-items:center;flex-wrap:wrap;gap:6px}
+.dv.g{color:var(--green)}.dv.b{color:var(--blue)}.dv.r{color:var(--oos)}
+.dv.p{color:var(--purple)}.dv.t{color:var(--teal)}.dv.ro{color:var(--rose)}
+.dv.tk{color:var(--token)}.dv.mu{color:var(--muted)}.dv.am{color:var(--amber)}
+.jw{background:#0d1520;border:1px solid var(--b);border-radius:6px;overflow:hidden}
+.jl{padding:5px 12px;font-size:9.5px;font-weight:700;letter-spacing:.4px;border-bottom:1px solid var(--b);font-family:var(--sans)}
+.jb{color:#c5d0dc;font-size:10.5px;line-height:1.75;padding:11px 0;margin:0;overflow-x:auto;white-space:pre;display:block;font-family:var(--mono)}
+.jgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ex-label{font-family:var(--mono);font-size:9.5px;color:var(--dim);padding:2px 0 7px;line-height:1.7}
+.sb{padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;white-space:nowrap}
+.sb-s{background:#1e3a5f;color:#93c5fd}
+.sb-c{background:#2e1065;color:#c4b5fd}
+.sb-x{background:#052e16;color:#86efac}
+.sb-r{background:#450a0a;color:#fca5a5}
+.dpath{font-size:9px;color:var(--dim);font-family:var(--mono)}
+
+/* Tabs */
+.tab-bar{background:var(--bg2);border-bottom:1px solid var(--b);display:flex;padding:0 20px;position:sticky;top:0;z-index:40}
+.tab-btn{background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.3px;margin-bottom:-1px;padding:11px 18px;transition:color .15s,border-color .15s}
+.tab-btn.active{border-bottom-color:var(--blue);color:var(--text)}
+.tab-btn:hover:not(.active){color:var(--text)}
+.pane{display:none}.pane.active{display:block}
+
+/* Flow table */
+.flow-wrap{padding:20px 24px;overflow:auto;max-height:calc(100vh - 130px)}
+.ft-table{border-collapse:separate;border-spacing:3px;width:100%;min-width:900px}
+.ft-table thead th{background:var(--bg3);border:1px solid var(--b);border-radius:4px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.5px;padding:8px 12px;text-align:left;text-transform:uppercase}
+.ft-ps{background:var(--bg3);border:1px solid var(--b);border-radius:5px;color:var(--text);font-size:11px;font-weight:700;padding:10px 14px;vertical-align:middle;white-space:nowrap;width:150px}
+.ft-lc{background:var(--bg3);border:1px solid var(--b);border-radius:5px;color:var(--muted);font-family:var(--mono);font-size:10px;padding:8px 12px;vertical-align:middle;width:220px}
+.ft-sm{color:var(--dim);font-family:var(--mono);font-size:9.5px;padding:6px 12px;vertical-align:middle;width:200px}
+.ft-out{border-radius:5px;display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;padding:5px 10px;white-space:nowrap}
+
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-title">TGG Delivery Schema — Implementation Guide</div>
+    <div class="hdr-sub">schema.org Offer block per purchase state and lifecycle</div>
+  </div>
+  <div class="tgg-badge">The Good Guys</div>
+</div>
+
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>InStock + Shipping</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>InStock + LLT Shipping</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--blue)"></div>PreOrder + Shipping</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--oos)"></div>OutOfStock + Shipping</div>
+  <div class="leg-sep"></div>
+  <div class="leg"><div class="leg-dot" style="background:var(--teal)"></div>InStock — No Shipping</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--gray)"></div>No Offer Block</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--rose)"></div>Discontinued</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--purple)"></div>InStoreOnly</div>
+  <div class="leg"><div class="leg-dot" style="background:#374151;border:1px solid #4b5563"></div>No Schema</div>
+  <div class="leg-hint">Click any coloured cell</div>
+</div>
+
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="matrix">State Matrix</button>
+  <button class="tab-btn" data-tab="flow">Decision Flow</button>
+</div>
+<div id="pane-matrix" class="pane active">
+<div class="wrap"><table id="mtable"></table></div></div>
+<div id="pane-flow" class="pane">
+<div class="flow-wrap">
+  <table class="ft-table">
+    <thead>
+      <tr>
+        <th>purchase_state</th>
+        <th>product_life_cycle</th>
+        <th>product_state_message</th>
+        <th>Schema Output</th>
+      </tr>
+    </thead>
+    <tbody>
+<tr><td class="ft-ps" rowspan="12">ADD TO CART</td><td class="ft-lc" rowspan="2">PARCELISED</td><td class="ft-sm">IS_PO-Y or IS_PO-N</td><td><span class="ft-out" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green)">InStock &nbsp;·&nbsp; H: 0 &nbsp;·&nbsp; T: 1</span></td></tr>
+<tr><td class="ft-sm">OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60</td><td><span class="ft-out" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)">InStock &nbsp;·&nbsp; H: LLT &nbsp;·&nbsp; T: 1</span></td></tr>
+<tr><td class="ft-lc" rowspan="2">BIG-BULKY</td><td class="ft-sm">IS_PO-Y or IS_PO-N</td><td><span class="ft-out" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green)">InStock &nbsp;·&nbsp; H: 0 &nbsp;·&nbsp; T: 2</span></td></tr>
+<tr><td class="ft-sm">OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60</td><td><span class="ft-out" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)">InStock &nbsp;·&nbsp; H: LLT &nbsp;·&nbsp; T: 2</span></td></tr>
+<tr><td class="ft-lc" rowspan="2">PREMIUM</td><td class="ft-sm">IS_PO-Y or IS_PO-N</td><td><span class="ft-out" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green)">InStock &nbsp;·&nbsp; H: 0 &nbsp;·&nbsp; T: 2</span></td></tr>
+<tr><td class="ft-sm">OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60</td><td><span class="ft-out" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber)">InStock &nbsp;·&nbsp; H: LLT &nbsp;·&nbsp; T: 2</span></td></tr>
+<tr><td class="ft-lc">PREORDER-PL / CENTRALISED-PL</td><td class="ft-sm">IS_PO-Y or IS_PO-N</td><td><span class="ft-out" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue)">PreOrder &nbsp;·&nbsp; H: days(release&minus;today) &nbsp;·&nbsp; T: 1</span></td></tr>
+<tr><td class="ft-lc">PREORDER-BB</td><td class="ft-sm">OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60</td><td><span class="ft-out" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue)">PreOrder &nbsp;·&nbsp; H: days(release&minus;today) &nbsp;·&nbsp; T: 2</span></td></tr>
+<tr><td class="ft-lc">REGION-C-PL</td><td class="ft-sm">IS_PO-Y or IS_PO-N</td><td><span class="ft-out" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green)">InStock &nbsp;·&nbsp; H: 0 &nbsp;·&nbsp; T: 3</span></td></tr>
+<tr><td class="ft-lc">AGENCY-* / DROPSHIP-BB</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--gray-bg);color:var(--muted);border:1px solid var(--gray)">Remove availability, seller, shippingDetails</span></td></tr>
+<tr><td class="ft-lc">UNCLASSIFIED</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal)">InStock &nbsp;·&nbsp; Remove shippingDetails</span></td></tr>
+<tr><td class="ft-lc">STAND-ALONE-SERVICE</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--gray-bg);color:var(--dim);border:1px solid var(--gray)">No schema output</span></td></tr>
+<tr><td class="ft-ps" rowspan="3">SOLD OUT</td><td class="ft-lc">PARCELISED</td><td class="ft-sm">OOS_PO-Y_LT61</td><td><span class="ft-out" style="background:var(--oos-bg);color:var(--oos);border:1px solid var(--oos)">OutOfStock &nbsp;·&nbsp; H: 61 &nbsp;·&nbsp; T: 1</span></td></tr>
+<tr><td class="ft-lc">BIG-BULKY</td><td class="ft-sm">OOS_PO-Y_LT61</td><td><span class="ft-out" style="background:var(--oos-bg);color:var(--oos);border:1px solid var(--oos)">OutOfStock &nbsp;·&nbsp; H: 61 &nbsp;·&nbsp; T: 2</span></td></tr>
+<tr><td class="ft-lc">PREMIUM</td><td class="ft-sm">OOS_PO-Y_LT61</td><td><span class="ft-out" style="background:var(--oos-bg);color:var(--oos);border:1px solid var(--oos)">OutOfStock &nbsp;·&nbsp; H: 61 &nbsp;·&nbsp; T: 2</span></td></tr>
+<tr><td class="ft-ps">COMING SOON</td><td class="ft-lc">Any lifecycle</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--gray-bg);color:var(--muted);border:1px solid var(--gray)">Remove entire offers block</span></td></tr>
+<tr><td class="ft-ps">PRE ORDER</td><td class="ft-lc">PREORDER-PL</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue)">Same logic as ADD TO CART + PREORDER-PL</span></td></tr>
+<tr><td class="ft-ps">NOT AVAILABLE</td><td class="ft-lc">Any lifecycle</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--rose-bg);color:var(--rose);border:1px solid var(--rose)">Discontinued &nbsp;·&nbsp; Remove shippingDetails</span></td></tr>
+<tr><td class="ft-ps">IN STORE ONLY</td><td class="ft-lc">Any lifecycle</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple)">InStoreOnly &nbsp;·&nbsp; Remove shippingDetails</span></td></tr>
+<tr><td class="ft-ps">BUY AT Miele</td><td class="ft-lc">AGENCY-Miele-PL / BB</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--gray-bg);color:var(--muted);border:1px solid var(--gray)">Same logic as AGENCY-*</span></td></tr>
+<tr><td class="ft-ps">ORDER NOW</td><td class="ft-lc">UNCLASSIFIED</td><td class="ft-sm">—</td><td><span class="ft-out" style="background:var(--gray-bg);color:var(--dim);border:1px solid var(--gray)">No schema output</span></td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="drawer" id="drawer">
+    <div class="d-hdr">
+      <div class="d-title" id="d-title"></div>
+      <div class="d-sub"  id="d-sub"></div>
+      <button class="d-close" id="d-close">&#x2715;</button>
+    </div>
+    <div class="d-body" id="d-body"></div>
+  </div>
+</div>
+
+<script>
+// ─── PALETTE ──────────────────────────────────────────────────────────────────
+const CL = {
+  ci: {cls:'ci',  lbl:'InStock',       sub:'+ Shipping'},
+  cil:{cls:'cil', lbl:'InStock',       sub:'+ LLT Shipping'},
+  cp: {cls:'cp',  lbl:'PreOrder',      sub:'+ Shipping'},
+  co: {cls:'co',  lbl:'OutOfStock',    sub:'+ Shipping'},
+  cd: {cls:'cd',  lbl:'Discontinued',  sub:''},
+  cis:{cls:'cis', lbl:'InStock',       sub:'No Shipping'},
+  cin:{cls:'cin', lbl:'InStoreOnly',   sub:''},
+  cx: {cls:'cx',  lbl:'No Schema',     sub:''},
+  cno:{cls:'cx',  lbl:'No Offer Block',sub:''},
+  na: {cls:'na',  lbl:'',             sub:''},
+};
+
+// ─── MATRIX LAYOUT ────────────────────────────────────────────────────────────
+const PS = [
+  'ADD TO CART','SOLD OUT','COMING SOON','PRE ORDER',
+  'NOT AVAILABLE','IN STORE ONLY','BUY AT Miele','ORDER NOW'
+];
+const LC = [
+  'PARCELISED','PARCELISED (OOS)',
+  'BIG-BULKY','BIG-BULKY (OOS)',
+  'PREMIUM','PREMIUM (OOS)',
+  'PREORDER-PL','PREORDER-BB','REGION-C-PL',
+  'AGENCY-*','UNCLASSIFIED','STAND-ALONE SERVICE'
+];
+
+const GRID = [
+// PARC-IS      PARC-OOS     BB-IS        BB-OOS       PREM-IS      PREM-OOS     PO-PL        PO-BB        REG-C        AGENCY       UNC          SVC
+ ['atc_pi',    'atc_po',    'atc_bi',    'atc_bo',    'atc_mi',    'atc_mo',    'atc_pp',    'atc_pb',    'atc_rc',   'atc_ag',    'atc_un',    'atc_sv'],
+ ['so_p',       null,        'so_b',      null,        'so_m',      null,         null,         null,         null,        null,         null,         null],
+ ['cs',         'cs',        'cs',        'cs',        'cs',        'cs',         null,         'cs',         'cs',        'cs',         'cs',         null],
+ [null,          null,         null,         null,         null,         null,        'po_pp',     null,          null,         null,         null,         null],
+ ['na',         'na',        'na',        'na',        'na',        'na',        'na',        'na',        'na',        'na',         'na',         null],
+ ['iso',        'iso',       'iso',       'iso',       'iso',       'iso',       'iso',       'iso',       'iso',       'iso',        'iso',        null],
+ [null,          null,         null,         null,         null,         null,         null,         null,         null,        'miele',      null,         null],
+ [null,          null,         null,         null,         null,         null,         null,         null,         null,         null,         null,        'on'],
+];
+
+const SCEN_CL = {
+  atc_pi:'ci', atc_po:'cil', atc_bi:'ci', atc_bo:'cil', atc_mi:'ci', atc_mo:'cil',
+  atc_pp:'cp', atc_pb:'cp', atc_rc:'ci', atc_ag:'cno', atc_un:'cis', atc_sv:'cx',
+  so_p:'co', so_b:'co', so_m:'co',
+  cs:'cno', po_pp:'cp', na:'cd', iso:'cin', miele:'cno', on:'cx',
+};
+
+// ─── COMPACT BEFORE (only what's changing) ────────────────────────────────────
+const BEF = `"mainEntityOfPage": { "@type": "WebPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 7, "unitCode": "DAY" }
+    }
+  }
+}`;
+
+const BEF_OFFER = `"mainEntityOfPage": { "@type": "WebPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  ...
+}`;
+
+// ─── AFTER JSON ───────────────────────────────────────────────────────────────
+const CHANGED_MARKERS = [
+  'ItemPage','Discontinued','InStoreOnly','OutOfStock','PreOrder',
+  'availabilityStarts','lowestLeadTime',
+  '"minValue": 0, "maxValue": 0',
+  '"minValue": 1, "maxValue": 1',
+  '"minValue": 2, "maxValue": 2',
+  '"minValue": 3, "maxValue": 3',
+  '"minValue": 61',
+];
+function hl(s){
+  return s
+    .split('\n')
+    .map(line => {
+      const tok = line.replace(/(\{\{[^}]+\}\})/g,'<span style="color:#fbbf24;font-weight:700">$1</span>');
+      if(line.includes('REMOVED')){
+        return '<span style="display:block;background:rgba(220,38,38,.18);border-left:3px solid #dc2626;padding:0 13px 0 10px;color:#fca5a5;font-weight:700">'+tok+'</span>';
+      }
+      if(CHANGED_MARKERS.some(m=>line.includes(m))){
+        return '<span style="display:block;background:rgba(217,119,6,.15);border-left:3px solid #d97706;padding:0 13px 0 10px">'+tok+'</span>';
+      }
+      return '<span style="display:block;padding:0 13px">'+tok+'</span>';
+    })
+    .join('\n');
+}
+function jblock(content,label,lbg){
+  return `<div class="jw"><div class="jl" style="background:${lbg};color:#e2e8f0">${label}</div><div class="jb"><div style="display:inline-block;min-width:100%;white-space:pre;vertical-align:top">${hl(content)}</div></div></div>`;
+}
+
+const AFTER = {
+  atc_pi:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_po:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": {{ lowestLeadTime }}, "maxValue": {{ lowestLeadTime }}, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_bi:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 2, "maxValue": 2, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_bo:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": {{ lowestLeadTime }}, "maxValue": {{ lowestLeadTime }}, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 2, "maxValue": 2, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_mi:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 2, "maxValue": 2, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_mo:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": {{ lowestLeadTime }}, "maxValue": {{ lowestLeadTime }}, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 2, "maxValue": 2, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_pp:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/PreOrder",
+  "availabilityStarts": "{{ tgg.pre_order_date }}",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": {{ days(tgg.release_date - today) }}, "maxValue": {{ days(tgg.release_date - today) }}, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_pb:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/PreOrder",
+  "availabilityStarts": "{{ tgg.pre_order_date }}",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": {{ days(tgg.release_date - today) }}, "maxValue": {{ days(tgg.release_date - today) }}, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 2, "maxValue": 2, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_rc:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 0, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 3, "maxValue": 3, "unitCode": "DAY" }
+    }
+  }
+}`,
+  atc_ag:`"mainEntityOfPage": { "@type": "ItemPage" },
+// "offers": REMOVED`,
+  atc_un:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStock"
+}`,
+  atc_sv:null,
+  so_p:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/OutOfStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 61, "maxValue": 61, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 1,  "maxValue": 1,  "unitCode": "DAY" }
+    }
+  }
+}`,
+  so_b:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/OutOfStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 61, "maxValue": 61, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 2,  "maxValue": 2,  "unitCode": "DAY" }
+    }
+  }
+}`,
+  so_m:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/OutOfStock",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": 61, "maxValue": 61, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 2,  "maxValue": 2,  "unitCode": "DAY" }
+    }
+  }
+}`,
+  cs:`"mainEntityOfPage": { "@type": "ItemPage" },
+// "offers": REMOVED`,
+  po_pp:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/PreOrder",
+  "availabilityStarts": "{{ tgg.pre_order_date }}",
+  "shippingDetails": {
+    "deliveryTime": {
+      "handlingTime": { "@type": "QuantitativeValue", "minValue": {{ days(tgg.release_date - today) }}, "maxValue": {{ days(tgg.release_date - today) }}, "unitCode": "DAY" },
+      "transitTime":  { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 1, "unitCode": "DAY" }
+    }
+  }
+}`,
+  na:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/Discontinued",
+  // "shippingDetails": REMOVED
+}`,
+  iso:`"mainEntityOfPage": { "@type": "ItemPage" },
+"offers": {
+  "availability": "https://schema.org/InStoreOnly",
+  // "shippingDetails": REMOVED
+}`,
+  miele:`"mainEntityOfPage": { "@type": "ItemPage" },
+// "offers": REMOVED`,
+  on:null,
+};
+
+// ─── SCENARIO DATA ────────────────────────────────────────────────────────────
+function sb(src){
+  const cls={s:'sb-s',c:'sb-c',x:'sb-x',r:'sb-r'}[src]||'sb-x';
+  const lbl={s:'Shopify',c:'Computed',x:'Fixed',r:'Remove'}[src]||src;
+  return `<span class="sb ${cls}">${lbl}</span>`;
+}
+
+const SCENS = {
+  atc_pi:{
+    det:'0d handling / 1d transit',
+    title:'ADD TO CART — PARCELISED',
+    sub:'product_state_message: IS_PO-Y or IS_PO-N',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART', s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PARCELISED',  s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'IS_PO-Y or IS_PO-N', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',        v:'https://schema.org/InStock', vc:'g',  s:'x'},
+      {f:'handlingTime min/max', v:'0 / 0',                    vc:'',   s:'x'},
+      {f:'transitTime min/max',  v:'1 / 1',                    vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_po:{
+    det:'LLT handling / 1d transit',
+    title:'ADD TO CART — PARCELISED (OOS)',
+    sub:'product_state_message: OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART', s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PARCELISED',  s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',         v:'https://schema.org/InStock',       vc:'g',  s:'x'},
+      {f:'handlingTime min/max',  v:'lowestLeadTime / lowestLeadTime', vc:'tk', s:'s', p:'tgg.web_ready_rule_checks → lowestLeadTime'},
+      {f:'transitTime min/max',   v:'1 / 1',                           vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_bi:{
+    det:'0d handling / 2d transit',
+    title:'ADD TO CART — BIG-BULKY',
+    sub:'product_state_message: IS_PO-Y or IS_PO-N',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART', s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'BIG-BULKY',   s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'IS_PO-Y or IS_PO-N', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',        v:'https://schema.org/InStock', vc:'g',  s:'x'},
+      {f:'handlingTime min/max', v:'0 / 0',                    vc:'',   s:'x'},
+      {f:'transitTime min/max',  v:'2 / 2',                    vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_bo:{
+    det:'LLT handling / 2d transit',
+    title:'ADD TO CART — BIG-BULKY (OOS)',
+    sub:'product_state_message: OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART', s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'BIG-BULKY',   s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',         v:'https://schema.org/InStock',       vc:'g',  s:'x'},
+      {f:'handlingTime min/max',  v:'lowestLeadTime / lowestLeadTime', vc:'tk', s:'s', p:'tgg.web_ready_rule_checks → lowestLeadTime'},
+      {f:'transitTime min/max',   v:'2 / 2',                           vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_mi:{
+    det:'0d handling / 2d transit',
+    title:'ADD TO CART — PREMIUM',
+    sub:'product_state_message: IS_PO-Y or IS_PO-N',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART', s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PREMIUM',     s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'IS_PO-Y or IS_PO-N', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',        v:'https://schema.org/InStock', vc:'g',  s:'x'},
+      {f:'handlingTime min/max', v:'0 / 0',                    vc:'',   s:'x'},
+      {f:'transitTime min/max',  v:'2 / 2',                    vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_mo:{
+    det:'LLT handling / 2d transit',
+    title:'ADD TO CART — PREMIUM (OOS)',
+    sub:'product_state_message: OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART', s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PREMIUM',     s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',         v:'https://schema.org/InStock',       vc:'g',  s:'x'},
+      {f:'handlingTime min/max',  v:'lowestLeadTime / lowestLeadTime', vc:'tk', s:'s', p:'tgg.web_ready_rule_checks → lowestLeadTime'},
+      {f:'transitTime min/max',   v:'2 / 2',                           vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_pp:{
+    det:'Release-today handling / 1d transit',
+    title:'ADD TO CART — PREORDER-PL / PREORDER-CENTRALISED-PL',
+    sub:'product_state_message: IS_PO-Y or IS_PO-N',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART',                              s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PREORDER-PL or PREORDER-CENTRALISED-PL',  s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'IS_PO-Y or IS_PO-N',                      s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',         v:'https://schema.org/PreOrder',                     vc:'b',  s:'x'},
+      {f:'availabilityStarts',   v:'tgg.pre_order_date',                              vc:'tk', s:'s', p:'product.metafields.tgg.pre_order_date'},
+      {f:'handlingTime min/max', v:'days(tgg.release_date − today) / same  (min 0)', vc:'tk', s:'c', p:'product.metafields.tgg.release_date'},
+      {f:'transitTime min/max',  v:'1 / 1',                                           vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_pb:{
+    det:'Release-today handling / 2d transit',
+    title:'ADD TO CART — PREORDER-BB',
+    sub:'product_state_message: OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART',  s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PREORDER-BB',  s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'OOS_PO-Y_LT7 or OOS_PO-Y_LT7-60', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',         v:'https://schema.org/PreOrder',                     vc:'b',  s:'x'},
+      {f:'availabilityStarts',   v:'tgg.pre_order_date',                              vc:'tk', s:'s', p:'product.metafields.tgg.pre_order_date'},
+      {f:'handlingTime min/max', v:'days(tgg.release_date − today) / same  (min 0)', vc:'tk', s:'c', p:'product.metafields.tgg.release_date'},
+      {f:'transitTime min/max',  v:'2 / 2',                                           vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_rc:{
+    det:'0d handling / 3d transit',
+    title:'ADD TO CART — REGION-C-PL',
+    sub:'product_state_message: IS_PO-Y or IS_PO-N',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'ADD TO CART',  s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'REGION-C-PL',  s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'IS_PO-Y or IS_PO-N', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',        v:'https://schema.org/InStock', vc:'g',  s:'x'},
+      {f:'handlingTime min/max', v:'0 / 0',                    vc:'',   s:'x'},
+      {f:'transitTime min/max',  v:'3 / 3',                    vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  atc_ag:{
+    det:'remove avail + shipping',
+    title:'ADD TO CART — AGENCY-* / DROPSHIP-BB',
+    sub:'all brand variants — Miele, Fisher & Paykel, Loewe, Smeg, ASKO, WeByLoewe, Bertazzoni',
+    inputs:[
+      {f:'tgg.purchase_state',     v:'ADD TO CART', s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle', v:'AGENCY-{brand}-PL / AGENCY-{brand}-BB / DROPSHIP-BB', s:'s', p:'product.metafields.tgg.product_life_cycle'},
+    ],
+    fields:[
+      {f:'offers block', v:'REMOVE entire offers block', vc:'mu', s:'r'},
+    ],
+    bef:BEF_OFFER,
+  },
+  atc_un:{
+    det:'InStock / no shippingDetails',
+    title:'ADD TO CART — UNCLASSIFIED',
+    sub:'Remove shippingDetails — retain Offer block',
+    inputs:[
+      {f:'tgg.purchase_state',     v:'ADD TO CART',   s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle', v:'UNCLASSIFIED',  s:'s', p:'product.metafields.tgg.product_life_cycle'},
+    ],
+    fields:[
+      {f:'availability',    v:'https://schema.org/InStock',          vc:'g',  s:'x'},
+      {f:'shippingDetails', v:'REMOVE entire shippingDetails block', vc:'mu', s:'r'},
+    ],
+    bef:BEF,
+  },
+  atc_sv:{
+    det:'not a public PDP',
+    title:'ADD TO CART — STAND-ALONE-SERVICE',
+    sub:'Cart-only product — not a public PDP',
+    inputs:[
+      {f:'tgg.purchase_state',     v:'ADD TO CART',        s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle', v:'STAND-ALONE-SERVICE', s:'s', p:'product.metafields.tgg.product_life_cycle'},
+    ],
+    fields:[
+      {f:'Product schema block', v:'REMOVE the Product <script type="application/ld+json"> block only — where @type is "Product". Other schema blocks on this page (FAQPage, BreadcrumbList) are not affected.', vc:'mu', s:'r'},
+    ],
+    bef:null,
+  },
+  so_p:{
+    det:'61d handling / 1d transit',
+    title:'SOLD OUT — PARCELISED',
+    sub:'product_state_message: OOS_PO-Y_LT61',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'SOLD OUT',        s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PARCELISED',      s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'OOS_PO-Y_LT61',   s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',        v:'https://schema.org/OutOfStock', vc:'r',  s:'x'},
+      {f:'handlingTime min/max', v:'61 / 61',                     vc:'',   s:'x'},
+      {f:'transitTime min/max',  v:'1 / 1',                       vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  so_b:{
+    det:'61d handling / 2d transit',
+    title:'SOLD OUT — BIG-BULKY',
+    sub:'product_state_message: OOS_PO-Y_LT61',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'SOLD OUT',      s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'BIG-BULKY',     s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'OOS_PO-Y_LT61', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',        v:'https://schema.org/OutOfStock', vc:'r',  s:'x'},
+      {f:'handlingTime min/max', v:'61 / 61',                     vc:'',   s:'x'},
+      {f:'transitTime min/max',  v:'2 / 2',                       vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  so_m:{
+    det:'61d handling / 2d transit',
+    title:'SOLD OUT — PREMIUM',
+    sub:'product_state_message: OOS_PO-Y_LT61',
+    inputs:[
+      {f:'tgg.purchase_state',        v:'SOLD OUT',      s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle',    v:'PREMIUM',       s:'s', p:'product.metafields.tgg.product_life_cycle'},
+      {f:'tgg.product_state_message', v:'OOS_PO-Y_LT61', s:'s', p:'product.metafields.tgg.product_state_message'},
+    ],
+    fields:[
+      {f:'availability',        v:'https://schema.org/OutOfStock', vc:'r',  s:'x'},
+      {f:'handlingTime min/max', v:'61 / 61',                     vc:'',   s:'x'},
+      {f:'transitTime min/max',  v:'2 / 2',                       vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  cs:{
+    det:'remove entire offers block',
+    title:'COMING SOON — All lifecycles',
+    sub:'Product not yet available for purchase or pre-order',
+    inputs:[{f:'tgg.purchase_state', v:'COMING SOON', s:'s', p:'product.metafields.tgg.purchase_state'}],
+    fields:[
+      {f:'offers block', v:'REMOVE entire offers block', vc:'mu', s:'r'},
+    ],
+    bef:BEF_OFFER,
+  },
+  po_pp:{
+    det:'Release-today handling / 1d transit',
+    title:'PRE ORDER — PREORDER-PL',
+    sub:'Same logic as ADD TO CART + PREORDER-PL',
+    inputs:[
+      {f:'tgg.purchase_state',     v:'PRE ORDER',   s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle', v:'PREORDER-PL', s:'s', p:'product.metafields.tgg.product_life_cycle'},
+    ],
+    fields:[
+      {f:'availability',         v:'https://schema.org/PreOrder',                     vc:'b',  s:'x'},
+      {f:'availabilityStarts',   v:'tgg.pre_order_date',                              vc:'tk', s:'s', p:'product.metafields.tgg.pre_order_date'},
+      {f:'handlingTime min/max', v:'days(tgg.release_date − today) / same  (min 0)', vc:'tk', s:'c', p:'product.metafields.tgg.release_date'},
+      {f:'transitTime min/max',  v:'1 / 1',                                           vc:'',   s:'x'},
+    ],
+    bef:BEF,
+  },
+  na:{
+    det:'Discontinued / no shipping',
+    title:'NOT AVAILABLE — All lifecycles',
+    sub:'product_state_message: ALL',
+    inputs:[{f:'tgg.purchase_state', v:'NOT AVAILABLE', s:'s', p:'product.metafields.tgg.purchase_state'}],
+    fields:[
+      {f:'availability',    v:'https://schema.org/Discontinued',           vc:'ro', s:'x'},
+      {f:'shippingDetails', v:'REMOVE entire shippingDetails block',       vc:'mu', s:'r'},
+    ],
+    bef:BEF,
+  },
+  iso:{
+    det:'InStoreOnly / no shipping',
+    title:'IN STORE ONLY — All lifecycles',
+    sub:'product_state_message: ALL',
+    inputs:[{f:'tgg.purchase_state', v:'IN STORE ONLY', s:'s', p:'product.metafields.tgg.purchase_state'}],
+    fields:[
+      {f:'availability',      v:'https://schema.org/InStoreOnly',          vc:'p',  s:'x'},
+      {f:'shippingDetails',   v:'REMOVE entire shippingDetails block',     vc:'mu', s:'r'},
+    ],
+    bef:BEF,
+  },
+  miele:{
+    det:'remove avail + shipping',
+    title:'BUY AT Miele',
+    sub:'AGENCY-Miele-PL / AGENCY-Miele-BB',
+    inputs:[
+      {f:'tgg.purchase_state',     v:'BUY AT Miele',                    s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle', v:'AGENCY-Miele-PL / AGENCY-Miele-BB', s:'s', p:'product.metafields.tgg.product_life_cycle'},
+    ],
+    fields:[
+      {f:'offers block', v:'REMOVE entire offers block', vc:'mu', s:'r'},
+    ],
+    bef:BEF_OFFER,
+  },
+  on:{
+    det:'not a public PDP',
+    title:'ORDER NOW — UNCLASSIFIED',
+    sub:'Cart-only product — not a public PDP',
+    inputs:[
+      {f:'tgg.purchase_state',     v:'ORDER NOW',    s:'s', p:'product.metafields.tgg.purchase_state'},
+      {f:'tgg.product_life_cycle', v:'UNCLASSIFIED', s:'s', p:'product.metafields.tgg.product_life_cycle'},
+    ],
+    fields:[
+      {f:'Product schema block', v:'REMOVE the Product <script type="application/ld+json"> block only — where @type is "Product". Other schema blocks on this page (FAQPage, BreadcrumbList) are not affected.', vc:'mu', s:'r'},
+    ],
+    bef:null,
+  },
+};
+
+// ─── BUILD MATRIX ─────────────────────────────────────────────────────────────
+function buildMatrix(){
+  const tbl=document.getElementById('mtable');
+  const thead=tbl.createTHead();
+  const hr=thead.insertRow();
+  const th0=document.createElement('th');
+  th0.className='rh'; th0.textContent='Purchase State';
+  hr.appendChild(th0);
+  LC.forEach(lc=>{
+    const th=document.createElement('th');
+    th.textContent=lc;
+    hr.appendChild(th);
+  });
+  const tbody=tbl.createTBody();
+  PS.forEach((ps,ri)=>{
+    const tr=tbody.insertRow();
+    const th=document.createElement('th');
+    th.textContent=ps; tr.appendChild(th);
+    GRID[ri].forEach((sid,ci)=>{
+      const td=tr.insertCell();
+      if(!sid){td.className='cell na';return;}
+      const cl=CL[SCEN_CL[sid]]||CL.cx;
+      td.className='cell '+cl.cls;
+      td.dataset.sid=sid;
+      const scen=SCENS[sid];
+      const inner=document.createElement('div');
+      inner.className='cell-lbl';
+      const det2=scen&&scen.det?'<br><span style="font-size:8px;opacity:.6;font-weight:400;letter-spacing:0;white-space:nowrap">'+scen.det+'</span>':'';
+      inner.innerHTML=cl.lbl+det2;
+      td.appendChild(inner);
+    });
+  });
+}
+
+// ─── DRAWER ───────────────────────────────────────────────────────────────────
+function openDrawer(sid){
+  const s=SCENS[sid]; if(!s) return;
+  const cl=CL[SCEN_CL[sid]]||CL.cx;
+  document.getElementById('d-title').textContent=s.title;
+  document.getElementById('d-sub').textContent=s.sub||'';
+
+  let h='';
+
+  // Decision inputs
+  h+=`<div class="ds"><div class="ds-title">Decision Inputs</div>`;
+  s.inputs.forEach((inp,i)=>{
+    h+=`<div class="df"><div class="dk">${inp.f}</div><div class="dv"><span style="color:#e2e8f0;font-weight:600">${inp.v}</span>${inp.p?`<span class="dpath" style="margin-top:1px">${inp.p}</span>`:''}</div></div>`;
+  });
+  h+=`</div>`;
+
+  // Schema changes
+  h+=`<div class="ds"><div class="ds-title">Schema Changes</div>`;
+  s.fields.forEach(f=>{
+    const cls={s:'sb-s',c:'sb-c',x:'sb-x',r:'sb-r'}[f.s]||'sb-x';
+    const lbl={s:'Shopify',c:'Computed',x:'Fixed',r:'Remove'}[f.s]||f.s;
+    h+=`<div class="df"><div class="dk">${f.f}</div><div class="dv row"><span class="${f.vc||''}">${f.v}</span>`;
+    h+=`<span class="sb ${cls}">${lbl}</span>`;
+    if(f.p) h+=`<span class="dpath">${f.p}</span>`;
+    h+=`</div></div>`;
+  });
+  h+=`</div>`;
+
+  // Before / after
+  const afStr=AFTER[sid];
+  if(s.bef && afStr){
+    h+=`<div class="jgrid">`;
+    h+=jblock(s.bef,'BEFORE','#1e2d42');
+    h+=jblock(afStr,'AFTER','#052e16');
+    h+=`</div>`;
+  }
+
+  document.getElementById('d-body').innerHTML=h;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeDrawer(){
+  document.getElementById('overlay').classList.remove('open');
+  document.querySelectorAll('td.cell.active').forEach(td=>td.classList.remove('active'));
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+
+
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('pane-' + this.dataset.tab).classList.add('active');
+    });
+  });
+
+  buildMatrix();
+  document.getElementById('mtable').addEventListener('click',function(e){
+    const td=e.target.closest('td.cell:not(.na)');
+    if(!td||!td.dataset.sid) return;
+    document.querySelectorAll('td.cell.active').forEach(el=>el.classList.remove('active'));
+    td.classList.add('active');
+    openDrawer(td.dataset.sid);
+  });
+  document.getElementById('d-close').addEventListener('click',closeDrawer);
+  document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this) closeDrawer();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape') closeDrawer();});
+});
+</script>
+</body>
+</html>
